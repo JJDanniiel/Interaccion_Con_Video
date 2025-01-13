@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Proyecto Final</title>
+
+    <link rel="stylesheet" type="text/css" href="style.css" />
+
+    <script src="libraries/p5.min.js"></script>
+    <script src="libraries/p5.sound.min.js"></script>
+  </head>
+
+  <body>
+    <div id="project-description">
+      <h1>Proyecto Final</h1>
+      <p>
+        Este proyecto propone una experiencia inmersiva donde los jugadores
+        interactúan con un entorno virtual a través de movimientos de las manos
+        y sonidos del entorno. Inspirado en la convergencia entre cuerpo y
+        tecnología, el juego fomenta una conexión multisensorial, permitiendo a
+        los jugadores utilizar gestos y comandos sonoros como herramientas
+        principales para superar desafíos.
+      </p>
+      <p>
+        El diseño del juego se centra en la interacción intuitiva, combinando
+        precisión técnica con creatividad para ofrecer mecánicas novedosas y
+        accesibles. A medida que los jugadores avanzan, los gestos se vuelven
+        más complejos, y los sonidos que emiten (como aplausos, chasquidos o
+        palabras clave) desbloquean nuevas habilidades, alteran el entorno o
+        activan eventos únicos.
+      </p>
+      <h2>Detección de manos con ml5.js:</h2>
+      <p>
+        Se emplea la tecnología de Handpose para rastrear en tiempo real las
+        posiciones clave de las manos, permitiendo realizar acciones como mover
+        elementos, seleccionar objetos y crear trayectorias dinámicas.
+      </p>
+      <h2>Clasificación de sonidos con ml5.js:</h2>
+      <p>
+        Se implementa el modelo de clasificación de sonidos (SoundClassifier)
+        para interpretar entradas sonoras del usuario, transformándolas en
+        comandos específicos que complementan la interacción gestual.
+      </p>
+    </div>
+
+    <script src="sketch.js"></script>
+  </body>
+</html>

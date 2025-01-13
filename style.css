@@ -1,0 +1,53 @@
+/* Estilos generales */
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #121212; /* Fondo oscuro */
+  font-family: Arial, sans-serif;
+  color: #ffffff; /* Texto blanco */
+}
+
+/* Estilo del contenedor del texto */
+#project-description {
+  text-align: center;
+  max-width: 800px; /* Ancho máximo del texto */
+  padding: 20px;
+  border: 2px solid #ffb84c; /* Borde con el color preferido */
+  border-radius: 10px; /* Bordes redondeados */
+  background-color: #1e1e1e; /* Fondo para resaltar el contenido */
+}
+
+/* Títulos */
+h1 {
+  color: #ffb84c; /* Color preferido del usuario */
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+h2 {
+  color: #ffa64c; /* Tono similar al color preferido */
+  font-size: 1.2rem;
+  margin-top: 20px;
+}
+
+/* Párrafos */
+p {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 15px;
+  color: #e0e0e0; /* Gris claro para el texto */
+}
+
+/* Enlaces y elementos interactivos (si son necesarios en el futuro) */
+a {
+  color: #ffb84c;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
