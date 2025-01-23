@@ -1,0 +1,47 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 80vh;
+  margin: 0;
+  background-color: #f0f0f0;
+}
+
+#container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  bottom: 30px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#message {
+  margin-top: 10px;
+  font-size: 18px;
+  color: green;
+  font-weight: bold;
+}
+
+#videoContainer {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  border: 10px solid black;
+  border-radius: 10px;
+}
+
+
+#image{
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  border: 10px solid black;
+  border-radius: 10px;
+}
