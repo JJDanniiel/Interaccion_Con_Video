@@ -1,61 +1,92 @@
-let square;
-let path = [];
-const squareSize = 100; // El ancho del cuadrado será igual al ancho de la parte vertical de la T
-const moveSpeed = 5;
-const canvasWidth = 380;
-const canvasHeight = 500;
-let targetPosition;
-let moving = false;
-let gameWon = false;
-let touchedTop = false;
-let touchedLeft = false;
-let touchedRight = false;
-let video;
-let handPose;
-let hands = [];
-let previousIndexFingerX = null;
-let previousIndexFingerY = null;
+let square; // Forma del cuadrado
+let path = []; // Arreglo para almacenar el camino recorrido por el cuadrado
+const squareSize = 100; // El ancho del cuadrado será igual al ancho de la parte vertical
+const moveSpeed = 10; // Velocidad de movimiento del cuadrado
+const canvasWidth = 380; // Ancho del lienzo
+const canvasHeight = 500; // Alto del lienzo
+let targetPosition; // Posición objetivo a la que se moverá el cuadrado
+let moving = false; // Esto indica si el cuadrado se está moviendo
+let gameWon = false; // Esto indica si el juego ha sido ganado
+let touchedTop = false; // Esto indica si el borde superior ha sido tocado
+let touchedLeft = false; // Esto indica si el borde izquierdo ha sido tocado
+let touchedRight = false; // Esto indica si el borde derecho ha sido tocado
+let video; 
+let handPose; // Objeto de detección de poses de manos
+let hands = []; // Arreglo para almacenar las manos detectadas
+let previousIndexFingerX = null; // Posición X anterior del dedo índice
+let previousIndexFingerY = null; // Posición Y anterior del dedo índice
+let currentLevel = 1; // Nivel actual del juego
 
 function preload() {
-    handPose = ml5.handPose({flipped: true});
+    handPose = ml5.handPose({ flipped: true }); // Cargar el modelo de detección de poses de manos
 }
 
 function setup() {
-    let canvas = createCanvas(canvasWidth, canvasHeight);
+    let canvas = createCanvas(canvasWidth, canvasHeight); // Crear el lienzo
     canvas.parent('gameCanvas'); // Vincula el lienzo al div con id "gameCanvas"
-    
-    // Create a container for the video
+
+    // Se crea un contenedor para el video
     const videoContainer = createDiv().id('videoContainer');
     videoContainer.position(10, 10);
 
-    // Detect video & load ML model
+    // Con esto se detecta el video y carga el modelo de ml5
     video = createCapture(VIDEO, () => {
         video.size(320, 240);
         video.parent('videoContainer');
     });
     video.hide();
-    
-    handPose.detectStart(video, gotHands);
 
-    resetGame();
+    handPose.detectStart(video, gotHands); // Inicia la detección de manos
+
+    resetGame(); // Reinicia el juego
+
     document.getElementById('resetButton').addEventListener('click', resetGame);
+    document.getElementById('nextLevelButton').addEventListener('click', () => {
+        if (currentLevel < 2) {
+            currentLevel++;
+            resetGame();
+        }
+    });
+
+    document.getElementById('prevLevelButton').addEventListener('click', () => {
+        if (currentLevel > 1) {
+            currentLevel--;
+            resetGame();
+        }
+    });
 }
 
 function gotHands(results) {
-    hands = results;
+    hands = results; // Actualiza el arreglo de manos detectadas
+}
+
+function drawLevel1() {
+    // Dibuja la forma de la T invertida
+    fill(100);
+    rect(width / 2 - 50, 0, 100, height / 2);
+    rect(0, height / 2 - 50, width, 100);
+}
+
+function drawLevel2() {
+    // Dibujar la forma de la J, aún en proceso de ver como hacerla funcionar
+    fill(100);
+    rect(width / 2 - 50, 0, 100, height / 2); // Parte vertical de la J
+    rect(0, height - 100, width / 2, 100); // Parte horizontal de la J
 }
 
 function draw() {
-    background(52, 73, 94);
+    background(52, 73, 94); 
 
-    // Draw the T shape
-    fill(100);
-    rect(width / 2 - 50, 0, 100, height / 2); // Parte vertical de la T
-    rect(0, height / 2 - 50, width, 100); // Parte horizontal de la T
+    // Dibuja el nivel actual
+    if (currentLevel === 1) {
+        drawLevel1();
+    } else if (currentLevel === 2) {
+        drawLevel2();
+    }
 
-    // Draw the path
+    // Dibuja el camino del cuadrado
     stroke(26, 188, 156);
-    strokeWeight(squareSize); // El trazado tendrá el mismo ancho que el cuadrado
+    strokeWeight(squareSize);
     noFill();
     beginShape();
     for (let pos of path) {
@@ -63,33 +94,32 @@ function draw() {
     }
     endShape();
 
-    // Draw the square
+    // Aquí se dibuja el cuadrado
     fill(231, 76, 60);
     noStroke();
     rect(square.x - squareSize / 2, square.y - squareSize / 2, squareSize, squareSize);
 
-    // Check if the game is won
+    // Verifica si el juego está ganado
     if (checkIfWon() && !gameWon) {
         gameWon = true;
         document.getElementById('message').innerText = "¡Ganaste!";
-        // Trigger confetti
         triggerConfetti();
     }
 
-    // Move the square towards the target position
+    // Mueve el cuadrado hacia la posición objetivo
     if (moving) {
         moveSquare();
     }
 
-    handleHandPose();
+    handleHandPose(); // Maneja la detección de poses de manos
 
-    // Display video feed for debugging
+    // Muestra la alimentación de video para depuración
     image(video, 110, 350, 160, 120);
 }
 
 function handleHandPose() {
     if (hands.length > 0 && !moving && !gameWon) {
-        const indexFinger = hands[0].keypoints[8];
+        const indexFinger = hands[0].keypoints[8]; // De aquí se obtiene la posición del dedo índice
         const currentX = indexFinger.x;
         const currentY = indexFinger.y;
 
@@ -99,18 +129,18 @@ function handleHandPose() {
 
             if (Math.abs(deltaX) > Math.abs(deltaY)) {
                 if (deltaX > 10) {
-                    // Move right
+                    // Mover a la derecha
                     targetPosition = createVector(width, square.y);
                 } else if (deltaX < -10) {
-                    // Move left
+                    // Mover a la izquierda
                     targetPosition = createVector(0, square.y);
                 }
             } else {
                 if (deltaY > 10) {
-                    // Move down
+                    // Mover hacia abajo
                     targetPosition = createVector(square.x, height / 2);
                 } else if (deltaY < -10) {
-                    // Move up
+                    // Mover hacia arriba
                     targetPosition = createVector(square.x, 0);
                 }
             }
@@ -126,29 +156,40 @@ function handleHandPose() {
 }
 
 function moveSquare() {
-    let distance = p5.Vector.sub(targetPosition, square);
+    let distance = p5.Vector.sub(targetPosition, square); // Calcular la distancia hacia la posición objetivo
     if (distance.mag() <= moveSpeed) {
-        square.set(targetPosition);
-        path.push(square.copy());
+        square.set(targetPosition); // Actualiza la posición del cuadrado
+        path.push(square.copy()); // Añade la nueva posición al camino
         moving = false;
-        updateTouchedEdges();
+        updateTouchedEdges(); // Actualiza los bordes tocados
     } else {
-        distance.setMag(moveSpeed);
-        square.add(distance);
-        path.push(square.copy());
+        distance.setMag(moveSpeed); // Se ajusta la magnitud de la distancia
+        square.add(distance); // Mueve el cuadrado
+        path.push(square.copy()); // Añade la nueva posición al camino
     }
 }
 
 function isValidMove(pos) {
-    // Check if the position is within the bounds of the T shape
+  if (currentLevel === 1) {
+    // Límite para la forma de la T invertida
     if (
-        (pos.x >= width / 2 - 50 && pos.x <= width / 2 + 50 && pos.y >= 0 && pos.y <= height / 2) ||
-        (pos.y >= height / 2 - 50 && pos.y <= height / 2 + 50 && pos.x >= 0 && pos.x <= width)
+      (pos.x >= width / 2 - 50 && pos.x <= width / 2 + 50 && pos.y >= 0 && pos.y <= height / 2) ||
+      (pos.y >= height / 2 - 50 && pos.y <= height / 2 + 50 && pos.x >= 0 && pos.x <= width)
     ) {
-        return true;
+      return true;
     }
-    return false;
+  } else if (currentLevel === 2) {
+    // Límite para la forma de la J, en proceso
+    if (
+      (pos.x >= width / 2 - 50 && pos.x <= width / 2 + 50 && pos.y >= 0 && pos.y <= height / 2) || // Parte vertical
+      (pos.x >= width / 2 - 50 && pos.x <= width / 2 + 50 && pos.y >= height / 2 && pos.y <= height / 2 + 100) // Parte horizontal
+    ) {
+      return true;
+    }
+  }
+  return false;
 }
+
 
 function updateTouchedEdges() {
     if (square.y === 0) {
@@ -163,13 +204,13 @@ function updateTouchedEdges() {
 }
 
 function checkIfWon() {
-    // Check if all three edges (top, left, right) have been touched
+    // Se verifica si se han tocado todos los bordes necesarios
     return touchedTop && touchedLeft && touchedRight;
 }
 
 function resetGame() {
-    square = createVector(width / 2, height / 2);
-    path = [square.copy()];
+    square = createVector(width / 2, height / 2); // Reinicia la posición del cuadrado
+    path = [square.copy()]; // Reinicia el camino
     moving = false;
     gameWon = false;
     touchedTop = false;
@@ -178,7 +219,7 @@ function resetGame() {
     previousIndexFingerX = null;
     previousIndexFingerY = null;
     document.getElementById('message').innerText = "";
-    loop(); // Restart the draw loop
+    loop(); // Reinicia el bucle de dibujo
 }
 
 function triggerConfetti() {
@@ -186,7 +227,7 @@ function triggerConfetti() {
     const end = Date.now() + duration;
 
     (function frame() {
-        // Launch confetti from the top-center of the video feed
+        // Se lanza confeti desde la parte superior del video cuando ganan el nivel
         confetti({
             particleCount: 3,
             angle: 60,
@@ -203,5 +244,5 @@ function triggerConfetti() {
         if (Date.now() < end) {
             requestAnimationFrame(frame);
         }
-    }());
+    })();
 }
