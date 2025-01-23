@@ -1,10 +1,9 @@
 let square;
 let path = [];
-let movesLeft = 8; // Reduce the number of moves to 4
 const squareSize = 100; // El ancho del cuadrado será igual al ancho de la parte vertical de la T
-const moveSpeed = 8;
-const canvasWidth = 600;
-const canvasHeight = 600;
+const moveSpeed = 5;
+const canvasWidth = 380;
+const canvasHeight = 500;
 let targetPosition;
 let moving = false;
 let gameWon = false;
@@ -22,11 +21,12 @@ function preload() {
 }
 
 function setup() {
-    createCanvas(canvasWidth, canvasHeight);
-
+    let canvas = createCanvas(canvasWidth, canvasHeight);
+    canvas.parent('gameCanvas'); // Vincula el lienzo al div con id "gameCanvas"
+    
     // Create a container for the video
     const videoContainer = createDiv().id('videoContainer');
-    videoContainer.position(10,10);
+    videoContainer.position(10, 10);
 
     // Detect video & load ML model
     video = createCapture(VIDEO, () => {
@@ -46,15 +46,15 @@ function gotHands(results) {
 }
 
 function draw() {
-    background(255);
+    background(52, 73, 94);
 
     // Draw the T shape
-    fill(200);
+    fill(100);
     rect(width / 2 - 50, 0, 100, height / 2); // Parte vertical de la T
     rect(0, height / 2 - 50, width, 100); // Parte horizontal de la T
 
     // Draw the path
-    stroke(0, 0, 255);
+    stroke(26, 188, 156);
     strokeWeight(squareSize); // El trazado tendrá el mismo ancho que el cuadrado
     noFill();
     beginShape();
@@ -64,27 +64,16 @@ function draw() {
     endShape();
 
     // Draw the square
-    fill(255, 0, 0);
+    fill(231, 76, 60);
     noStroke();
     rect(square.x - squareSize / 2, square.y - squareSize / 2, squareSize, squareSize);
 
-    // Display moves left
-    fill(0);
-    noStroke();
-    textSize(16);
-    text(`Movimientos restantes: ${movesLeft}`, 10, height - 10);
-
     // Check if the game is won
-    if (checkIfWon()) {
+    if (checkIfWon() && !gameWon) {
         gameWon = true;
         document.getElementById('message').innerText = "¡Ganaste!";
-        noLoop(); // Stop the draw loop
-    }
-
-    // Check if the game is lost
-    if (movesLeft <= 0 && !gameWon) {
-        document.getElementById('message').innerText = "¡Perdiste!";
-        noLoop(); // Stop the draw loop
+        // Trigger confetti
+        triggerConfetti();
     }
 
     // Move the square towards the target position
@@ -95,11 +84,11 @@ function draw() {
     handleHandPose();
 
     // Display video feed for debugging
-    image(video, 10, 10, 160, 120);
+    image(video, 110, 350, 160, 120);
 }
 
 function handleHandPose() {
-    if (hands.length > 0 && movesLeft > 0 && !moving && !gameWon) {
+    if (hands.length > 0 && !moving && !gameWon) {
         const indexFinger = hands[0].keypoints[8];
         const currentX = indexFinger.x;
         const currentY = indexFinger.y;
@@ -128,7 +117,6 @@ function handleHandPose() {
 
             if (targetPosition && isValidMove(targetPosition)) {
                 moving = true;
-                movesLeft--;
             }
         }
 
@@ -182,7 +170,6 @@ function checkIfWon() {
 function resetGame() {
     square = createVector(width / 2, height / 2);
     path = [square.copy()];
-    movesLeft = 8; // Reset the number of moves to 4
     moving = false;
     gameWon = false;
     touchedTop = false;
@@ -192,4 +179,29 @@ function resetGame() {
     previousIndexFingerY = null;
     document.getElementById('message').innerText = "";
     loop(); // Restart the draw loop
+}
+
+function triggerConfetti() {
+    const duration = 2 * 1000;
+    const end = Date.now() + duration;
+
+    (function frame() {
+        // Launch confetti from the top-center of the video feed
+        confetti({
+            particleCount: 3,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0, y: 0.5 }
+        });
+        confetti({
+            particleCount: 3,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1, y: 0.5 }
+        });
+
+        if (Date.now() < end) {
+            requestAnimationFrame(frame);
+        }
+    }());
 }

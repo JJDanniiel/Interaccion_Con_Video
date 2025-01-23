@@ -8,11 +8,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.js"></script>
     <script src="https://unpkg.com/ml5@1/dist/ml5.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
   </head>
   <body>
     <div id="container">
-      <button id="resetButton">Reiniciar Juego</button>
-      <div id="message"></div>
+      <div id="gameContainer">
+          <div id="gameCanvas"></div>
+          <div id="controls">
+              <button id="resetButton">Reiniciar Juego</button>
+              <div id="message"></div>
+          </div>
+      </div>
+      <div id="instructions">
+          <h2>Indicaciones del Juego</h2>
+          <p>Utiliza los movimientos de tu mano para mover el cuadrado rojo dentro de la forma de la letra "T".</p>
+          <p>Debes tocar los bordes superior, izquierdo y derecho para ganar el juego.</p>
+          <p>Mueve tu dedo índice hacia la derecha para mover el cuadrado a la derecha, hacia la izquierda para moverlo a la izquierda, hacia arriba para moverlo hacia arriba y hacia abajo para moverlo hacia abajo.</p>
+      </div>
   </div>
     <script src="sketch.js"></script>
   </body>
